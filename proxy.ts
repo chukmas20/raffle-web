@@ -8,7 +8,7 @@ import {
 } from "@/lib/auth-cookies";
 import { getApiUrl } from "@/lib/env";
 
-const PUBLIC_PATHS = ["/login", "/register", "/forgot-password", "/reset-password"];
+const PUBLIC_PATHS = ["/login", "/register", "/forgot-password", "/reset-password","/draw","/api/public"];
 
 const isPublicPath = (pathname: string) =>
   PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));

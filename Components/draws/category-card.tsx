@@ -2,6 +2,8 @@ import { deleteCategoryAction, runCategoryAction, voidRedrawAction } from "@/act
 import { ActionForm } from "@/Components/ui/action-form";
 import { CategoryStatusBadge } from "@/Components/ui/badge";
 import type { CategoryResults, DrawStatus } from "@/types/api";
+import Link from "next/link";
+import { buttonClass } from "../ui/styles";
 
 export function CategoryCard({
   orgId,
@@ -36,12 +38,12 @@ export function CategoryCard({
 
         <div className="flex items-center gap-2">
           {canRun && (
-            <ActionForm
-              action={runCategoryAction.bind(null, orgId, drawId, category.id)}
-              label="Run draw"
-              pendingText="Drawing…"
-              confirm={`Draw ${category.winners_count} winner(s) for "${category.name}"? This can't be undone.`}
-            />
+            <Link
+              href={`/orgs/${orgId}/draws/${drawId}/machine?prize=${category.id}`}
+              className={buttonClass("primary", "md")}
+            >
+              Open draw machine
+            </Link>
           )}
           {canEdit && (
             <ActionForm

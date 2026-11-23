@@ -11,6 +11,7 @@ import { authApi } from "@/lib/dal";
 import { formatDateTime, formatNumber } from "@/lib/format";
 import { assertUuid } from "@/lib/ids";
 import type { Draw, DrawResults, Organization, TicketSummary } from "@/types/api";
+import { CopyLinkButton } from "@/Components/ui/copy-link-button";
 
 export const metadata: Metadata = { title: "Draw" };
 
@@ -70,6 +71,25 @@ export default async function DrawPage({
             <Link href={`${base}/tickets`} className={buttonClass("outline", "sm")}>
               Tickets
             </Link>
+                        <Link href={`${base}/media`} className={buttonClass("outline", "sm")}>
+              Media
+            </Link>
+            {(draw.status === "active" || draw.status === "completed") && (
+              <>
+            {draw.status === "active" && (
+              <Link href={`${base}/machine`} className={buttonClass("primary", "sm")}>
+                Open draw machine
+              </Link>
+            )}
+                <Link href={`${base}/stage`} target="_blank" className={buttonClass("outline", "sm")}>
+                  Present on projector
+                </Link>
+                <Link href={`/draw/${drawId}`} target="_blank" className={buttonClass("outline", "sm")}>
+                  Public page
+                </Link>
+                <CopyLinkButton path={`/draw/${drawId}`} label="Copy public link" />
+              </>
+            )}
             {hasWinners && (
               <a href={`${base}/export`} className={buttonClass("outline", "sm")}>
                 Export results (CSV)

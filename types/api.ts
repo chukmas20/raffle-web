@@ -95,3 +95,19 @@ export type DrawResults = {
   status: DrawStatus;
   categories: CategoryResults[];
 };
+
+export type MediaKind = "music" | "audio" | "video" | "advert";
+
+export type DrawMedia = {
+  id: string;
+  draw_id: string;
+  category_id: string | null;
+  kind: MediaKind;
+  title: string;
+  url: string;
+  media_type: "audio" | "video" | "image";
+  format: string;
+  size_bytes: number;
+  sort_order: number;
+  created_at: string;
+};

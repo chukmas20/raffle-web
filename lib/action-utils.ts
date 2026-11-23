@@ -34,6 +34,7 @@ export async function mutate<T = unknown>(
   method: "POST" | "PATCH" | "DELETE",
   body?: unknown,
 ): Promise<Result<T>> {
+  if (!/^\/[A-Za-z0-9/_-]+$/.test(path)) return { error: { message: "Invalid request." } };
   const token = await requireToken();
   try {
     return { data: await apiFetch<T>(path, { method, token, body }) };

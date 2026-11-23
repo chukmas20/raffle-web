@@ -14,6 +14,7 @@ import { authApi } from "@/lib/dal";
 import { formatDateTime, formatNumber } from "@/lib/format";
 import { assertUuid } from "@/lib/ids";
 import type { Draw, Organization, TicketPage, TicketSummary } from "@/types/api";
+import { TicketImport } from "@/Components/tickets/ticket-import";
 
 export const metadata: Metadata = { title: "Tickets" };
 
@@ -69,6 +70,27 @@ export default async function TicketsPage({
           { label: "Tickets" },
         ]}
       />
+
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <a
+          href={`${base}/tickets/export${status ? `?status=${status}` : ""}`}
+          className={buttonClass("outline", "sm")}
+        >
+          Export {status ? `${status} ` : "all "}tickets (Excel)
+        </a>
+        {editable && (
+          <a href={`${base}/tickets/template`} className={buttonClass("outline", "sm")}>
+            Download import template
+          </a>
+        )}
+      </div>
+
+      {!editable && (
+        <p className="mb-5 rounded-xl border border-navy-200 bg-white px-4 py-3 text-sm text-navy-700">
+          This draw is {draw.status}, so its tickets are locked. They can no longer be edited, imported or
+          generated. You can still export them.
+        </p>
+      )}
 
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-5">
         {[
@@ -135,6 +157,11 @@ export default async function TicketsPage({
           </section>
         </div>
       )}
+      {editable && (
+        <div className="mt-6">
+          <TicketImport orgId={orgId} drawId={drawId} />
+        </div>
+      )}
 
       <section className="mt-8">
         <form className="mb-4 flex flex-wrap items-end gap-3" method="get">
@@ -166,19 +193,23 @@ export default async function TicketsPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-navy-100 align-top">
-              {tickets.items.map((ticket) => (
+                            {tickets.items.map((ticket) => (
                 <tr key={ticket.id}>
                   <td className="px-4 py-3 font-display text-lg font-bold tracking-widest text-navy-900">
                     {ticket.number}
                   </td>
-                  <td className="px-4 py-3"><TicketStatusBadge status={ticket.status} /></td>
+                  <td className="px-4 py-3">
+                    <TicketStatusBadge status={ticket.status} />
+                  </td>
                   <td className="px-4 py-3 text-navy-700">
                     {ticket.holder_name ?? "—"}
-                    {ticket.holder_phone && <span className="block text-navy-500">{ticket.holder_phone}</span>}
+                    {ticket.holder_phone && (
+                      <span className="block text-navy-500">{ticket.holder_phone}</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-navy-500">{formatDateTime(ticket.sold_at, "—")}</td>
                   <td className="px-4 py-3">
-                    {draw.status !== "cancelled" && (
+                    {editable && (
                       <details>
                         <summary className="cursor-pointer font-semibold text-crimson-600">Edit</summary>
                         <ActionForm
@@ -187,13 +218,11 @@ export default async function TicketsPage({
                           size="sm"
                           className="mt-3 w-64 space-y-3"
                         >
-                          {editable && (
-                            <SelectField label="Status" name="status" defaultValue={ticket.status}>
-                              <option value="available">Available</option>
-                              <option value="sold">Sold</option>
-                              <option value="void">Void</option>
-                            </SelectField>
-                          )}
+                          <SelectField label="Status" name="status" defaultValue={ticket.status}>
+                            <option value="available">Available</option>
+                            <option value="sold">Sold</option>
+                            <option value="void">Void</option>
+                          </SelectField>
                           <TextField label="Holder name" name="holderName" defaultValue={ticket.holder_name ?? ""} />
                           <TextField label="Phone" name="holderPhone" type="tel" defaultValue={ticket.holder_phone ?? ""} />
                           <TextField label="Email" name="holderEmail" type="email" defaultValue={ticket.holder_email ?? ""} />
