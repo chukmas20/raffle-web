@@ -9,6 +9,7 @@ type ImportReport = {
   dry_run: boolean;
   total_rows: number;
   valid_rows: number;
+  created: number;
   newly_sold: number;
   updated_existing: number;
   error_count: number;
@@ -98,7 +99,8 @@ export function TicketImport({ orgId, drawId }: { orgId: string; drawId: string 
       <h2 className="font-display text-lg font-bold text-navy-900">Import sold tickets from Excel</h2>
       <p className="mt-1 text-sm text-navy-500">
         Upload an .xlsx or .csv file with the columns <strong>Ticket Number</strong>, Holder Name, Phone and
-        Email. Matching tickets are marked as sold. Blank cells never erase details that are already saved.
+        Email. Tickets are marked as sold, and numbers not yet in this draw are added. Blank cells never
+        erase details that are already saved.
       </p>
 
       <div className="mt-4 space-y-4">
@@ -139,7 +141,8 @@ export function TicketImport({ orgId, drawId }: { orgId: string; drawId: string 
                 {number(report.valid_rows)} of {number(report.total_rows)} rows are ready to import.
               </p>
               <ul className="mt-1 list-disc pl-5 text-navy-600">
-                <li>{number(report.newly_sold)} tickets will be marked as sold</li>
+                <li>{number(report.created)} new tickets will be added as sold</li>
+                <li>{number(report.newly_sold)} existing tickets will be marked as sold</li>
                 <li>{number(report.updated_existing)} already-sold tickets will get updated details</li>
                 {report.error_count > 0 && (
                   <li className="font-semibold text-crimson-700">
@@ -196,8 +199,9 @@ export function TicketImport({ orgId, drawId }: { orgId: string; drawId: string 
         {report && step === "done" && (
           <div className="space-y-4">
             <Alert tone="notice">
-              Done. {number(report.newly_sold)} tickets were marked as sold and{" "}
-              {number(report.updated_existing)} existing tickets were updated.
+              Done. {number(report.created)} new tickets were added as sold,{" "}
+              {number(report.newly_sold)} existing tickets were marked as sold and{" "}
+              {number(report.updated_existing)} already-sold tickets were updated.
               {report.error_count > 0 && ` ${number(report.error_count)} rows were skipped.`}
             </Alert>
             <button type="button" onClick={reset} className={buttonClass("outline", "md")}>
